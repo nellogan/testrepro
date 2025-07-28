@@ -24,6 +24,11 @@ jobs:
       #        uses: actions/setup-node@v4
       #        with:
       #          node-version: '22'
+
+      - name: Install curl
+        run: |
+          apt-get install curl
+
       - name: Set up Node.js
         run: |
           curl -Lo node.tar.gz https://nodejs.org/download/release/v22.16.0/node-v22.16.0-linux-x64.tar.gz
