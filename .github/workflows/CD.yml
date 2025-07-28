@@ -70,6 +70,18 @@ jobs:
       - name: Patch node_modules/react-native/ReactAndroid/cmake-utils/ReactNative-application.cmake file to fix codegen .so files (reproducible build test, this is ?)
         run: |
           sed -i '/target_link_libraries(${APP_CODEGEN_TARGET} common_flags)/a \        foreach(codegen_target ${APP_CODEGEN_TARGET})\n            target_link_options(${codegen_target} PRIVATE -Wl,--build-id=none)\n        endforeach()' node_modules/react-native/ReactAndroid/cmake-utils/ReactNative-application.cmake
+          sed -i '/if(override_cpp_SRC)/,/endif()/c\
+          if(override_cpp_SRC)\
+              file(GLOB input_SRC CONFIGURE_DEPENDS\
+                   ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp\
+                   ${BUILD_DIR}/generated/autolinking/src/main/jni/*.cpp)\
+              list(SORT input_SRC) # Ensure deterministic order\
+          else()\
+              file(GLOB input_SRC CONFIGURE_DEPENDS\
+                   ${REACT_ANDROID_DIR}/cmake-utils/default-app-setup/*.cpp\
+                   ${BUILD_DIR}/generated/autolinking/src/main/jni/*.cpp)\
+              list(SORT input_SRC) # Ensure deterministic order\
+          endif()' node_modules/react-native/ReactAndroid/cmake-utils/ReactNative-application.cmake
           echo 'set_target_properties(${CMAKE_PROJECT_NAME} PROPERTIES LINK_FLAGS "-Wl,--build-id=none")' >> node_modules/react-native/ReactAndroid/cmake-utils/ReactNative-application.cmake
 
       - name: Build the apk files
