@@ -6,9 +6,6 @@ on:
       - 'v*'
 
 #target_link_options(rnscreens PRIVATE -Wl,--build-id=none)
-#      - name: Patch react-native-screens cmake file (reproducible build test)
-#        run: |
-#          echo "set_target_properties(rnscreens PROPERTIES LINK_FLAGS \"-Wl,--build-id=none\")" >> node_modules/react-native-screens/android/CMakeLists.txt
 
 
 permissions:
@@ -49,6 +46,18 @@ jobs:
       - name: Decode keystore file
         run: |
           echo "${{ secrets.RELEASE_STORE_FILE_BASE64 }}" | base64 -d > release.keystore
+
+      - name: Patch node_modules/react-native-screens/android/CMakeLists.txt file (reproducible build test, this is correct)
+        run: |
+          echo "set_target_properties(rnscreens PROPERTIES LINK_FLAGS \"-Wl,--build-id=none\")" >> node_modules/react-native-screens/android/CMakeLists.txt
+
+      - name: Patch node_modules/react-native/ReactAndroid/cmake-utils/default-app-setup/CMakeLists.txt file to fix libappmodules.so (reproducible build test, this is ?)
+        run: |
+          echo "set_target_properties(appmodules PROPERTIES LINK_FLAGS \"-Wl,--build-id=none\")" >> node_modules/react-native/ReactAndroid/cmake-utils/default-app-setup/CMakeLists.txt
+
+      - name: Patch node_modules/react-native/ReactAndroid/cmake-utils/ReactNative-application.cmake file to fix codegen .so files (reproducible build test, this is ?)
+        run: |
+          echo 'set_target_properties(${CMAKE_PROJECT_NAME} PROPERTIES LINK_FLAGS "-Wl,--build-id=none")' >> node_modules/react-native/ReactAndroid/cmake-utils/ReactNative-application.cmake
 
       - name: Build the apk files
         env:
