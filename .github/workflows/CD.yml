@@ -58,9 +58,7 @@ jobs:
           RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
         run: |
           cd android
-          ./gradlew generateCodegenArtifactsFromSchema
-          cd app
-          ./gradlew assembleRelease
+          ./gradlew generateCodegenArtifactsFromSchema assembleRelease
 
       - name: Create Release
         id: create_release
