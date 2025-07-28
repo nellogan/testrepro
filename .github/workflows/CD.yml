@@ -6,6 +6,10 @@ on:
       - 'v*'
 
 #target_link_options(rnscreens PRIVATE -Wl,--build-id=none)
+#      - name: Patch react-native-screens cmake file (reproducible build test)
+#        run: |
+#          echo "set_target_properties(rnscreens PROPERTIES LINK_FLAGS \"-Wl,--build-id=none\")" >> node_modules/react-native-screens/android/CMakeLists.txt
+
 
 permissions:
   contents: write  # Grants write access to repository contents
@@ -45,10 +49,6 @@ jobs:
       - name: Decode keystore file
         run: |
           echo "${{ secrets.RELEASE_STORE_FILE_BASE64 }}" | base64 -d > release.keystore
-
-      - name: Patch react-native-screens cmake file (reproducible build test)
-        run: |
-          echo "set_target_properties(rnscreens PROPERTIES LINK_FLAGS \"-Wl,--build-id=none\")" >> node_modules/react-native-screens/android/CMakeLists.txt
 
       - name: Build the apk files
         env:
