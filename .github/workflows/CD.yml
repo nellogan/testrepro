@@ -5,6 +5,8 @@ on:
     tags:
       - 'v*'
 
+#target_link_options(rnscreens PRIVATE -Wl,--build-id=none)
+
 permissions:
   contents: write  # Grants write access to repository contents
 
@@ -18,10 +20,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-#      - name: Set up Node.js
-#        uses: actions/setup-node@v4
-#        with:
-#          node-version: '22'
+      #      - name: Set up Node.js
+      #        uses: actions/setup-node@v4
+      #        with:
+      #          node-version: '22'
       - name: Set up Node.js
         run: |
           sudo curl -Lo node.tar.gz https://nodejs.org/download/release/v22.16.0/node-v22.16.0-linux-x64.tar.gz
@@ -29,15 +31,11 @@ jobs:
             | sha256sum -c -
           sudo tar xzf node.tar.gz --strip-components=1 -C /usr/local/
 
-      #      - name: Set up JDK
-#        uses: actions/setup-java@v4
-#        with:
-#          java-version: '17'
-#          distribution: 'temurin'
       - name: Install OpenJDK 17
         run: |
           apt-get update
           apt-get install -y openjdk-17-jdk
+
       - name: Verify Java version
         run: java -version
 
@@ -45,15 +43,13 @@ jobs:
         run: |
           npm install
 
-      # Android SDK uses Clang inside CMake by default
-      - name: Install Clang and CMake
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y clang cmake
-
       - name: Decode keystore file
         run: |
           echo "${{ secrets.RELEASE_STORE_FILE_BASE64 }}" | base64 -d > release.keystore
+
+      - name: Patch react-native-screens cmake file (reproducible build test)
+        run: |
+          echo "set_target_properties(rnscreens PROPERTIES LINK_FLAGS \"-Wl,--build-id=none\")" >> node_modules/react-native-screens/android/CMakeLists.txt
 
       - name: Build the apk files
         env:
@@ -64,6 +60,7 @@ jobs:
         run: |
           cd android
           ./gradlew generateCodegenArtifactsFromSchema
+          cd app
           ./gradlew assembleRelease
 
       - name: Create Release
@@ -99,7 +96,7 @@ jobs:
           # Extract the value of the top-level "upload_url" key
           upload_url=$(echo "$response" | grep -o '"upload_url":\s*"[^"{]*' | sed 's/.*"upload_url":\s*"//')
           echo "upload_url=$upload_url" >> $GITHUB_OUTPUT
-          
+
       - name: Upload apk files
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
