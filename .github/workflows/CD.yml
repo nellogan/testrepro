@@ -12,6 +12,14 @@ on:
 
 #  sed '/target_link_libraries(${APP_CODEGEN_TARGET} common_flags)/a \        foreach(codegen_target ${APP_CODEGEN_TARGET})\n            set_target_properties(${codegen_target} PROPERTIES LINK_FLAGS "-Wl,--build-id=none")\n        endforeach()' node_modules/react-native/ReactAndroid/cmake-utils/ReactNative-application.cmake > node_modules/react-native/ReactAndroid/cmake-utils/ReactNative-application.cmake
 
+
+#      - name: Patch node_modules/react-native/ReactAndroid/cmake-utils/ReactNative-application.cmake file to fix codegen .so files (reproducible build test, this is ?)
+#        run: |
+#          sed -i '/get_property(APP_CODEGEN_TARGET DIRECTORY ${PROJECT_BUILD_DIR}\/generated\/source\/codegen\/jni\/ PROPERTY BUILDSYSTEM_TARGETS)/a \        foreach(target ${APP_CODEGEN_TARGET})\n            set_target_properties(${target} PROPERTIES LINK_FLAGS "-Wl,--build-id=none")\n        endforeach()' node_modules/react-native/ReactAndroid/cmake-utils/ReactNative-application.cmake
+#          echo 'set_target_properties(${CMAKE_PROJECT_NAME} PROPERTIES LINK_FLAGS "-Wl,--build-id=none")' >> node_modules/react-native/ReactAndroid/cmake-utils/ReactNative-application.cmake
+
+# sed -i '/target_link_libraries(${APP_CODEGEN_TARGET} common_flags)/a \        foreach(codegen_target ${APP_CODEGEN_TARGET})\n            target_link_options(${codegen_target} PRIVATE -Wl,--build-id=none)\n        endforeach()' node_modules/react-native/ReactAndroid/cmake-utils/ReactNative-application.cmake
+
 permissions:
   contents: write  # Grants write access to repository contents
 
@@ -55,13 +63,13 @@ jobs:
         run: |
           echo "set_target_properties(rnscreens PROPERTIES LINK_FLAGS \"-Wl,--build-id=none\")" >> node_modules/react-native-screens/android/CMakeLists.txt
 
-      - name: Patch node_modules/react-native/ReactAndroid/cmake-utils/default-app-setup/CMakeLists.txt file to fix libappmodules.so (reproducible build test, this is ?)
+      - name: Patch node_modules/react-native/ReactAndroid/cmake-utils/default-app-setup/CMakeLists.txt file to fix libappmodules.so (reproducible build test, this is correct)
         run: |
           echo "set_target_properties(appmodules PROPERTIES LINK_FLAGS \"-Wl,--build-id=none\")" >> node_modules/react-native/ReactAndroid/cmake-utils/default-app-setup/CMakeLists.txt
 
       - name: Patch node_modules/react-native/ReactAndroid/cmake-utils/ReactNative-application.cmake file to fix codegen .so files (reproducible build test, this is ?)
         run: |
-          sed -i '/get_property(APP_CODEGEN_TARGET DIRECTORY ${PROJECT_BUILD_DIR}\/generated\/source\/codegen\/jni\/ PROPERTY BUILDSYSTEM_TARGETS)/a \        foreach(target ${APP_CODEGEN_TARGET})\n            set_target_properties(${target} PROPERTIES LINK_FLAGS "-Wl,--build-id=none")\n        endforeach()' node_modules/react-native/ReactAndroid/cmake-utils/ReactNative-application.cmake
+          sed -i '/target_link_libraries(${APP_CODEGEN_TARGET} common_flags)/a \        foreach(codegen_target ${APP_CODEGEN_TARGET})\n            target_link_options(${codegen_target} PRIVATE -Wl,--build-id=none)\n        endforeach()' node_modules/react-native/ReactAndroid/cmake-utils/ReactNative-application.cmake
           echo 'set_target_properties(${CMAKE_PROJECT_NAME} PROPERTIES LINK_FLAGS "-Wl,--build-id=none")' >> node_modules/react-native/ReactAndroid/cmake-utils/ReactNative-application.cmake
 
       - name: Build the apk files
