@@ -3,11 +3,11 @@
 ## react-native patch
 
 # Force appmodules.so to omit unnecessary data that can interfere with reproducibility when linking
-CMAKE_FILE=node_modules/react-native/ReactAndroid/cmake-utils/default-app-setup/CMakeLists.txt
+CMAKE_FILE="node_modules/react-native/ReactAndroid/cmake-utils/default-app-setup/CMakeLists.txt"
 echo "set_target_properties(appmodules PROPERTIES LINK_FLAGS \"-Wl,--build-id=none -Wl,--sort-common -Wl,--sort-section=name -Wl,--no-undefined-version -Wl,--no-rosegment -Wl,--strip-all\")" >> $CMAKE_FILE
 
 # Set compiler to use -g0 to omit debug data which can interfere with reproducibility
-CMAKE_FILE=node_modules/react-native/ReactAndroid/cmake-utils/ReactNative-application.cmake
+CMAKE_FILE="node_modules/react-native/ReactAndroid/cmake-utils/ReactNative-application.cmake"
 sed -i '/add_library(${CMAKE_PROJECT_NAME} SHARED ${input_SRC})/a target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE -g0)' $CMAKE_FILE
 
 # Force linked third party libraries to omit unnecessary data when linking
