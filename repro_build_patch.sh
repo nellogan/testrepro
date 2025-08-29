@@ -61,8 +61,8 @@ GRADLE_CACHE_PREFIX="/home/${USER}/.gradle/caches/"
 PROJECT_ROOT=$(pwd)
 
 ## react-native-screens patch
-#CMAKE_FILE="node_modules/react-native-screens/android/CMakeLists.txt"
-#echo "set_target_properties(rnscreens PROPERTIES LINK_FLAGS \"-Wl,--build-id=none -Wl,--sort-common -Wl,--sort-section=name -Wl,--no-rosegment -Wl,--strip-all -Wl,--hash-style=gnu\")" >> $CMAKE_FILE
+CMAKE_FILE="node_modules/react-native-screens/android/CMakeLists.txt"
+echo "set_target_properties(rnscreens PROPERTIES LINK_FLAGS \"-Wl,--build-id=none -Wl,--sort-common -Wl,--sort-section=name -Wl,--no-rosegment -Wl,--strip-all -Wl,--hash-style=gnu\")" >> $CMAKE_FILE
 
 
 CMAKE_FILE="node_modules/react-native-screens/android/src/main/jni/CMakeLists.txt"
@@ -84,11 +84,8 @@ sed -i '/cmake_minimum_required(VERSION 3.13)/a \
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON) \
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -ffile-prefix-map=${CMAKE_SOURCE_DIR}=/project -fmacro-prefix-map=${CMAKE_SOURCE_DIR}=/project -ffile-prefix-map='"${GRADLE_CACHE_PREFIX}"'=/project/caches/ -fmacro-prefix-map='"${GRADLE_CACHE_PREFIX}"'=/project/caches/") \
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ffile-prefix-map=${CMAKE_SOURCE_DIR}=/project -fmacro-prefix-map=${CMAKE_SOURCE_DIR}=/project -ffile-prefix-map='"${GRADLE_CACHE_PREFIX}"'=/project/caches/ -fmacro-prefix-map='"${GRADLE_CACHE_PREFIX}"'=/project/caches/")' $CMAKE_FILE
-sed -i '/file(GLOB LIB_CUSTOM_SRCS CONFIGURE_DEPENDS \*.cpp ${LIB_COMMON_COMPONENTS_DIR}\/\*.cpp ${LIB_COMMON_COMPONENTS_DIR}\/utils\/\*.cpp)/a list(SORT LIB_CUSTOM_SRCS)' $CMAKE_FILE
-sed -i '/file(GLOB LIB_CODEGEN_SRCS CONFIGURE_DEPENDS ${LIB_ANDROID_GENERATED_COMPONENTS_DIR}\/\*.cpp)/a list(SORT LIB_CODEGEN_SRCS)' $CMAKE_FILE
-echo 'set_target_properties(${LIB_TARGET_NAME} PROPERTIES LINK_FLAGS "-Wl,--build-id=none -Wl,--sort-common -Wl,--sort-section=name -Wl,--no-undefined-version -Wl,--no-rosegment -Wl,--strip-all -Wl,--hash-style=gnu")' >> $CMAKE_FILE
-sed -i '/add_compile_options(/a \
-  -g0' $CMAKE_FILE
-
-# Set SOURCE_DATE_EPOCH for the entire build
-#export SOURCE_DATE_EPOCH=0
+#sed -i '/file(GLOB LIB_CUSTOM_SRCS CONFIGURE_DEPENDS \*.cpp ${LIB_COMMON_COMPONENTS_DIR}\/\*.cpp ${LIB_COMMON_COMPONENTS_DIR}\/utils\/\*.cpp)/a list(SORT LIB_CUSTOM_SRCS)' $CMAKE_FILE
+#sed -i '/file(GLOB LIB_CODEGEN_SRCS CONFIGURE_DEPENDS ${LIB_ANDROID_GENERATED_COMPONENTS_DIR}\/\*.cpp)/a list(SORT LIB_CODEGEN_SRCS)' $CMAKE_FILE
+#echo 'set_target_properties(${LIB_TARGET_NAME} PROPERTIES LINK_FLAGS "-Wl,--build-id=none -Wl,--sort-common -Wl,--sort-section=name -Wl,--no-undefined-version -Wl,--no-rosegment -Wl,--strip-all -Wl,--hash-style=gnu")' >> $CMAKE_FILE
+#sed -i '/add_compile_options(/a \
+#  -g0' $CMAKE_FILE
