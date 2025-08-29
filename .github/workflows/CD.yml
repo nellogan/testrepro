@@ -50,9 +50,7 @@ jobs:
         run: |
           cd android
           ./gradlew generateCodegenArtifactsFromSchema
-          cd ..
           bash ./repro_build_patch.sh
-          cd android
           ./gradlew assembleRelease
 
       - name: Create Release
