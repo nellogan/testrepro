@@ -55,14 +55,18 @@ if(EXISTS ${PROJECT_BUILD_DIR}/generated/source/codegen/jni/CMakeLists.txt)\
   )\
 endif()' $CMAKE_FILE
 
-## react-native-screens patch
-CMAKE_FILE="node_modules/react-native-screens/android/CMakeLists.txt"
-echo "set_target_properties(rnscreens PROPERTIES LINK_FLAGS \"-Wl,--build-id=none -Wl,--sort-common -Wl,--sort-section=name -Wl,--no-rosegment -Wl,--strip-all -Wl,--hash-style=gnu\")" >> $CMAKE_FILE
-
+## Common variables used for additional react-native libraries
 USER=$(whoami)
 GRADLE_CACHE_PREFIX="/home/${USER}/.gradle/caches/"
 PROJECT_ROOT=$(pwd)
+
+## react-native-screens patch
+#CMAKE_FILE="node_modules/react-native-screens/android/CMakeLists.txt"
+#echo "set_target_properties(rnscreens PROPERTIES LINK_FLAGS \"-Wl,--build-id=none -Wl,--sort-common -Wl,--sort-section=name -Wl,--no-rosegment -Wl,--strip-all -Wl,--hash-style=gnu\")" >> $CMAKE_FILE
+
+
 CMAKE_FILE="node_modules/react-native-screens/android/src/main/jni/CMakeLists.txt"
+
 sed -i '/cmake_minimum_required(VERSION 3.13)/a \
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON) \
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -ffile-prefix-map='"${PROJECT_ROOT}"'=/project -fmacro-prefix-map='"${PROJECT_ROOT}"'=/project -ffile-prefix-map='"${GRADLE_CACHE_PREFIX}"'=/project/caches/ -fmacro-prefix-map='"${GRADLE_CACHE_PREFIX}"'=/project/caches/") \
@@ -75,6 +79,7 @@ sed -i '/add_compile_options(/a \
 
 ## safe-area-context patch
 CMAKE_FILE="node_modules/react-native-safe-area-context/android/src/main/jni/CMakeLists.txt"
+
 sed -i '/cmake_minimum_required(VERSION 3.13)/a \
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON) \
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -ffile-prefix-map=${CMAKE_SOURCE_DIR}=/project -fmacro-prefix-map=${CMAKE_SOURCE_DIR}=/project -ffile-prefix-map='"${GRADLE_CACHE_PREFIX}"'=/project/caches/ -fmacro-prefix-map='"${GRADLE_CACHE_PREFIX}"'=/project/caches/") \
