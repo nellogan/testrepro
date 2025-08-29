@@ -5,7 +5,7 @@
 CMAKE_FILE="node_modules/react-native/ReactAndroid/cmake-utils/default-app-setup/CMakeLists.txt"
 echo "set_target_properties(appmodules PROPERTIES LINK_FLAGS \"-Wl,--build-id=none -Wl,--sort-common -Wl,--sort-section=name -Wl,--no-undefined-version -Wl,--no-rosegment -Wl,--strip-all -Wl,--hash-style=gnu\")" >> $CMAKE_FILE
 
-# Set compiler to use -g0 and -O0 to omit debug data and optimizations
+# Set compiler to use -g0 to omit debug data
 CMAKE_FILE="node_modules/react-native/ReactAndroid/cmake-utils/ReactNative-application.cmake"
 sed -i '/find_program(CCACHE_FOUND ccache)/,/endif(CCACHE_FOUND)/d' $CMAKE_FILE
 sed -i 's/set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)/set(CMAKE_INTERPROCEDURAL_OPTIMIZATION FALSE)/' $CMAKE_FILE
@@ -22,26 +22,26 @@ else()\
     ${BUILD_DIR}/generated/autolinking/src/main/jni/*.cpp)\
   list(SORT input_SRC) # Ensure deterministic order\
 endif()' $CMAKE_FILE
-sed -i '/add_library(${CMAKE_PROJECT_NAME} SHARED ${input_SRC})/a target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE -g0 -O0)' $CMAKE_FILE
+sed -i '/add_library(${CMAKE_PROJECT_NAME} SHARED ${input_SRC})/a target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE -g0)' $CMAKE_FILE
 # Force linked third-party libraries to omit unnecessary data
 sed -i '/if(EXISTS ${PROJECT_BUILD_DIR}\/generated\/autolinking\/src\/main\/jni\/Android-autolinking.cmake)/,/endif()/c\
 if(EXISTS ${PROJECT_BUILD_DIR}/generated/autolinking/src/main/jni/Android-autolinking.cmake)\
   include(${PROJECT_BUILD_DIR}/generated/autolinking/src/main/jni/Android-autolinking.cmake)\
   target_link_libraries(${CMAKE_PROJECT_NAME} ${AUTOLINKED_LIBRARIES})\
   foreach(autolinked_library ${AUTOLINKED_LIBRARIES})\
-    target_compile_options(${autolinked_library} PRIVATE -g0 -O0)\
+    target_compile_options(${autolinked_library} PRIVATE -g0)\
     target_link_options(${autolinked_library} PRIVATE -Wl,--build-id=none -Wl,--sort-common -Wl,--sort-section=name -Wl,--no-undefined-version -Wl,--no-rosegment -Wl,--strip-all -Wl,--hash-style=gnu)\
     target_link_libraries(${autolinked_library} common_flags)\
   endforeach()\
 endif()' $CMAKE_FILE
-# Force codegen files to be compiled with -g0 and -O0
+# Force codegen files to be compiled with -g0
 sed -i '/if(EXISTS ${PROJECT_BUILD_DIR}\/generated\/source\/codegen\/jni\/CMakeLists.txt)/,/endif()/c\
 if(EXISTS ${PROJECT_BUILD_DIR}/generated/source/codegen/jni/CMakeLists.txt)\
   add_subdirectory(${PROJECT_BUILD_DIR}/generated/source/codegen/jni/ codegen_app_build)\
   get_property(APP_CODEGEN_TARGET DIRECTORY ${PROJECT_BUILD_DIR}/generated/source/codegen/jni/ PROPERTY BUILDSYSTEM_TARGETS)\
   target_link_libraries(${CMAKE_PROJECT_NAME} ${APP_CODEGEN_TARGET})\
   foreach(codegen_target ${APP_CODEGEN_TARGET})\
-    target_compile_options(${codegen_target} PRIVATE -g0 -O0)\
+    target_compile_options(${codegen_target} PRIVATE -g0)\
     target_link_options(${codegen_target} PRIVATE -Wl,--build-id=none -Wl,--sort-common -Wl,--sort-section=name -Wl,--no-undefined-version -Wl,--no-rosegment -Wl,--strip-all -Wl,--hash-style=gnu)\
     target_link_libraries(${codegen_target} common_flags)\
   endforeach()\
@@ -71,7 +71,7 @@ sed -i '/file(GLOB LIB_CUSTOM_SRCS CONFIGURE_DEPENDS \*.cpp ${LIB_COMMON_COMPONE
 sed -i '/file(GLOB LIB_CODEGEN_SRCS CONFIGURE_DEPENDS ${LIB_ANDROID_GENERATED_COMPONENTS_DIR}\/\*.cpp)/a list(SORT LIB_CODEGEN_SRCS)' $CMAKE_FILE
 echo 'set_target_properties(${LIB_TARGET_NAME} PROPERTIES LINK_FLAGS "-Wl,--build-id=none -Wl,--sort-common -Wl,--sort-section=name -Wl,--no-undefined-version -Wl,--no-rosegment -Wl,--strip-all -Wl,--hash-style=gnu")' >> $CMAKE_FILE
 sed -i '/add_compile_options(/a \
-  -g0 -O0' $CMAKE_FILE
+  -g0' $CMAKE_FILE
 
 ## safe-area-context patch
 CMAKE_FILE="node_modules/react-native-safe-area-context/android/src/main/jni/CMakeLists.txt"
@@ -83,7 +83,7 @@ sed -i '/file(GLOB LIB_CUSTOM_SRCS CONFIGURE_DEPENDS \*.cpp ${LIB_COMMON_COMPONE
 sed -i '/file(GLOB LIB_CODEGEN_SRCS CONFIGURE_DEPENDS ${LIB_ANDROID_GENERATED_COMPONENTS_DIR}\/\*.cpp)/a list(SORT LIB_CODEGEN_SRCS)' $CMAKE_FILE
 echo 'set_target_properties(${LIB_TARGET_NAME} PROPERTIES LINK_FLAGS "-Wl,--build-id=none -Wl,--sort-common -Wl,--sort-section=name -Wl,--no-undefined-version -Wl,--no-rosegment -Wl,--strip-all -Wl,--hash-style=gnu")' >> $CMAKE_FILE
 sed -i '/add_compile_options(/a \
-  -g0 -O0' $CMAKE_FILE
+  -g0' $CMAKE_FILE
 
 # Set SOURCE_DATE_EPOCH for the entire build
 export SOURCE_DATE_EPOCH=0
