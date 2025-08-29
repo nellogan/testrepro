@@ -86,4 +86,4 @@ sed -i '/add_compile_options(/a \
   -g0' $CMAKE_FILE
 
 # Set SOURCE_DATE_EPOCH for the entire build
-export SOURCE_DATE_EPOCH=0
+#export SOURCE_DATE_EPOCH=0
