@@ -44,24 +44,24 @@ if(EXISTS ${PROJECT_BUILD_DIR}/generated/source/codegen/jni/CMakeLists.txt)\
   )\
 endif()' "$CMAKE_FILE"
 
-## react-native-screens patch
-# Force rnscreens.so to omit unnecessary data that can interfere with reproducibility when linking
-CMAKE_FILE="${PROJECT_ROOT}/node_modules/react-native-screens/android/CMakeLists.txt"
-echo "set_target_properties(rnscreens PROPERTIES LINK_FLAGS \"-Wl,--build-id=none -Wl,--sort-common -Wl,--sort-section=name -Wl,--no-rosegment -Wl,--strip-all -Wl,--hash-style=gnu\")" >> "$CMAKE_FILE"
-
-CMAKE_FILE="${PROJECT_ROOT}/node_modules/react-native-screens/android/src/main/jni/CMakeLists.txt"
-# Rewrite paths starting with ${PROJECT_ROOT} (the project’s root directory, obtained via pwd) to /project
-# -ffile-prefix-map: Rewrites file paths embedded in object files, such as those used in debug information or certain compiler-generated data
-# Even with -g0 (which disables debug info), some paths can still appear in the binary (e.g., in .rodata via __FILE__ expansion in assertions or logging)
-# Rewrite paths starting with ${GRADLE_CACHE_PREFIX} (defined as /home/${USER}/.gradle/caches/) to /project/caches/
-# -fmacro-prefix-map: Specifically rewrites paths used in macro expansions, such as __FILE__ in C/C++ code
-sed -i '/cmake_minimum_required(VERSION 3.13)/a \
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON) \
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -ffile-prefix-map='"${PROJECT_ROOT}"'=/project -fmacro-prefix-map='"${PROJECT_ROOT}"'=/project -ffile-prefix-map='"${GRADLE_CACHE_PREFIX}"'=/project/caches/ -fmacro-prefix-map='"${GRADLE_CACHE_PREFIX}"'=/project/caches/") \
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ffile-prefix-map='"${PROJECT_ROOT}"'=/project -fmacro-prefix-map='"${PROJECT_ROOT}"'=/project -ffile-prefix-map='"${GRADLE_CACHE_PREFIX}"'=/project/caches/ -fmacro-prefix-map='"${GRADLE_CACHE_PREFIX}"'=/project/caches/")' "$CMAKE_FILE"
-## safe-area-context patch
-CMAKE_FILE="${PROJECT_ROOT}/node_modules/react-native-safe-area-context/android/src/main/jni/CMakeLists.txt"
-sed -i '/cmake_minimum_required(VERSION 3.13)/a \
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON) \
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -ffile-prefix-map=${CMAKE_SOURCE_DIR}=/project -fmacro-prefix-map=${CMAKE_SOURCE_DIR}=/project -ffile-prefix-map='"${GRADLE_CACHE_PREFIX}"'=/project/caches/ -fmacro-prefix-map='"${GRADLE_CACHE_PREFIX}"'=/project/caches/") \
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ffile-prefix-map=${CMAKE_SOURCE_DIR}=/project -fmacro-prefix-map=${CMAKE_SOURCE_DIR}=/project -ffile-prefix-map='"${GRADLE_CACHE_PREFIX}"'=/project/caches/ -fmacro-prefix-map='"${GRADLE_CACHE_PREFIX}"'=/project/caches/")' "$CMAKE_FILE"
+### react-native-screens patch
+## Force rnscreens.so to omit unnecessary data that can interfere with reproducibility when linking
+#CMAKE_FILE="${PROJECT_ROOT}/node_modules/react-native-screens/android/CMakeLists.txt"
+#echo "set_target_properties(rnscreens PROPERTIES LINK_FLAGS \"-Wl,--build-id=none -Wl,--sort-common -Wl,--sort-section=name -Wl,--no-rosegment -Wl,--strip-all -Wl,--hash-style=gnu\")" >> "$CMAKE_FILE"
+#
+#CMAKE_FILE="${PROJECT_ROOT}/node_modules/react-native-screens/android/src/main/jni/CMakeLists.txt"
+## Rewrite paths starting with ${PROJECT_ROOT} (the project’s root directory, obtained via pwd) to /project
+## -ffile-prefix-map: Rewrites file paths embedded in object files, such as those used in debug information or certain compiler-generated data
+## Even with -g0 (which disables debug info), some paths can still appear in the binary (e.g., in .rodata via __FILE__ expansion in assertions or logging)
+## Rewrite paths starting with ${GRADLE_CACHE_PREFIX} (defined as /home/${USER}/.gradle/caches/) to /project/caches/
+## -fmacro-prefix-map: Specifically rewrites paths used in macro expansions, such as __FILE__ in C/C++ code
+#sed -i '/cmake_minimum_required(VERSION 3.13)/a \
+#set(CMAKE_EXPORT_COMPILE_COMMANDS ON) \
+#set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -ffile-prefix-map='"${PROJECT_ROOT}"'=/project -fmacro-prefix-map='"${PROJECT_ROOT}"'=/project -ffile-prefix-map='"${GRADLE_CACHE_PREFIX}"'=/project/caches/ -fmacro-prefix-map='"${GRADLE_CACHE_PREFIX}"'=/project/caches/") \
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ffile-prefix-map='"${PROJECT_ROOT}"'=/project -fmacro-prefix-map='"${PROJECT_ROOT}"'=/project -ffile-prefix-map='"${GRADLE_CACHE_PREFIX}"'=/project/caches/ -fmacro-prefix-map='"${GRADLE_CACHE_PREFIX}"'=/project/caches/")' "$CMAKE_FILE"
+### safe-area-context patch
+#CMAKE_FILE="${PROJECT_ROOT}/node_modules/react-native-safe-area-context/android/src/main/jni/CMakeLists.txt"
+#sed -i '/cmake_minimum_required(VERSION 3.13)/a \
+#set(CMAKE_EXPORT_COMPILE_COMMANDS ON) \
+#set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -ffile-prefix-map=${CMAKE_SOURCE_DIR}=/project -fmacro-prefix-map=${CMAKE_SOURCE_DIR}=/project -ffile-prefix-map='"${GRADLE_CACHE_PREFIX}"'=/project/caches/ -fmacro-prefix-map='"${GRADLE_CACHE_PREFIX}"'=/project/caches/") \
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ffile-prefix-map=${CMAKE_SOURCE_DIR}=/project -fmacro-prefix-map=${CMAKE_SOURCE_DIR}=/project -ffile-prefix-map='"${GRADLE_CACHE_PREFIX}"'=/project/caches/ -fmacro-prefix-map='"${GRADLE_CACHE_PREFIX}"'=/project/caches/")' "$CMAKE_FILE"
