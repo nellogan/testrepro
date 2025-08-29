@@ -71,11 +71,11 @@ sed -i '/cmake_minimum_required(VERSION 3.13)/a \
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON) \
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -ffile-prefix-map='"${PROJECT_ROOT}"'=/project -fmacro-prefix-map='"${PROJECT_ROOT}"'=/project -ffile-prefix-map='"${GRADLE_CACHE_PREFIX}"'=/project/caches/ -fmacro-prefix-map='"${GRADLE_CACHE_PREFIX}"'=/project/caches/") \
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ffile-prefix-map='"${PROJECT_ROOT}"'=/project -fmacro-prefix-map='"${PROJECT_ROOT}"'=/project -ffile-prefix-map='"${GRADLE_CACHE_PREFIX}"'=/project/caches/ -fmacro-prefix-map='"${GRADLE_CACHE_PREFIX}"'=/project/caches/")' $CMAKE_FILE
-sed -i '/file(GLOB LIB_CUSTOM_SRCS CONFIGURE_DEPENDS \*.cpp ${LIB_COMMON_COMPONENTS_DIR}\/\*.cpp ${LIB_COMMON_COMPONENTS_DIR}\/utils\/\*.cpp)/a list(SORT LIB_CUSTOM_SRCS)' $CMAKE_FILE
-sed -i '/file(GLOB LIB_CODEGEN_SRCS CONFIGURE_DEPENDS ${LIB_ANDROID_GENERATED_COMPONENTS_DIR}\/\*.cpp)/a list(SORT LIB_CODEGEN_SRCS)' $CMAKE_FILE
-echo 'set_target_properties(${LIB_TARGET_NAME} PROPERTIES LINK_FLAGS "-Wl,--build-id=none -Wl,--sort-common -Wl,--sort-section=name -Wl,--no-undefined-version -Wl,--no-rosegment -Wl,--strip-all -Wl,--hash-style=gnu")' >> $CMAKE_FILE
-sed -i '/add_compile_options(/a \
-  -g0' $CMAKE_FILE
+#sed -i '/file(GLOB LIB_CUSTOM_SRCS CONFIGURE_DEPENDS \*.cpp ${LIB_COMMON_COMPONENTS_DIR}\/\*.cpp ${LIB_COMMON_COMPONENTS_DIR}\/utils\/\*.cpp)/a list(SORT LIB_CUSTOM_SRCS)' $CMAKE_FILE
+#sed -i '/file(GLOB LIB_CODEGEN_SRCS CONFIGURE_DEPENDS ${LIB_ANDROID_GENERATED_COMPONENTS_DIR}\/\*.cpp)/a list(SORT LIB_CODEGEN_SRCS)' $CMAKE_FILE
+#echo 'set_target_properties(${LIB_TARGET_NAME} PROPERTIES LINK_FLAGS "-Wl,--build-id=none -Wl,--sort-common -Wl,--sort-section=name -Wl,--no-undefined-version -Wl,--no-rosegment -Wl,--strip-all -Wl,--hash-style=gnu")' >> $CMAKE_FILE
+#sed -i '/add_compile_options(/a \
+#  -g0' $CMAKE_FILE
 
 ## safe-area-context patch
 CMAKE_FILE="node_modules/react-native-safe-area-context/android/src/main/jni/CMakeLists.txt"
