@@ -5,25 +5,10 @@
 CMAKE_FILE="node_modules/react-native/ReactAndroid/cmake-utils/default-app-setup/CMakeLists.txt"
 echo "set_target_properties(appmodules PROPERTIES LINK_FLAGS \"-Wl,--build-id=none -Wl,--sort-common -Wl,--sort-section=name -Wl,--no-undefined-version -Wl,--no-rosegment -Wl,--strip-all -Wl,--hash-style=gnu\")" >> $CMAKE_FILE
 
-# Set compiler to use -g0 to omit debug data
 CMAKE_FILE="node_modules/react-native/ReactAndroid/cmake-utils/ReactNative-application.cmake"
-#sed -i '/find_program(CCACHE_FOUND ccache)/,/endif(CCACHE_FOUND)/d' $CMAKE_FILE
-#sed -i 's/set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)/set(CMAKE_INTERPROCEDURAL_OPTIMIZATION FALSE)/' $CMAKE_FILE
-## Sort source files
-#sed -i '/if(override_cpp_SRC)/,/endif()/c\
-#if(override_cpp_SRC)\
-#  file(GLOB input_SRC CONFIGURE_DEPENDS\
-#    ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp\
-#    ${BUILD_DIR}/generated/autolinking/src/main/jni/*.cpp)\
-#  list(SORT input_SRC) # Ensure deterministic order\
-#else()\
-#  file(GLOB input_SRC CONFIGURE_DEPENDS\
-#    ${REACT_ANDROID_DIR}/cmake-utils/default-app-setup/*.cpp\
-#    ${BUILD_DIR}/generated/autolinking/src/main/jni/*.cpp)\
-#  list(SORT input_SRC) # Ensure deterministic order\
-#endif()' $CMAKE_FILE
-sed -i '/add_library(${CMAKE_PROJECT_NAME} SHARED ${input_SRC})/a target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE -g0)' $CMAKE_FILE
-# Force linked third-party libraries to omit unnecessary data
+
+#sed -i '/add_library(${CMAKE_PROJECT_NAME} SHARED ${input_SRC})/a target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE -g0)' $CMAKE_FILE
+# Force autolinked libraries to be compiled with -g0 and use appropriate linker flags for reproducibility
 sed -i '/if(EXISTS ${PROJECT_BUILD_DIR}\/generated\/autolinking\/src\/main\/jni\/Android-autolinking.cmake)/,/endif()/c\
 if(EXISTS ${PROJECT_BUILD_DIR}/generated/autolinking/src/main/jni/Android-autolinking.cmake)\
   include(${PROJECT_BUILD_DIR}/generated/autolinking/src/main/jni/Android-autolinking.cmake)\
@@ -34,7 +19,7 @@ if(EXISTS ${PROJECT_BUILD_DIR}/generated/autolinking/src/main/jni/Android-autoli
     target_link_libraries(${autolinked_library} common_flags)\
   endforeach()\
 endif()' $CMAKE_FILE
-# Force codegen files to be compiled with -g0
+# Force codegen files to be compiled with -g0 and use appropriate linker flags for reproducibility
 sed -i '/if(EXISTS ${PROJECT_BUILD_DIR}\/generated\/source\/codegen\/jni\/CMakeLists.txt)/,/endif()/c\
 if(EXISTS ${PROJECT_BUILD_DIR}/generated/source/codegen/jni/CMakeLists.txt)\
   add_subdirectory(${PROJECT_BUILD_DIR}/generated/source/codegen/jni/ codegen_app_build)\
@@ -76,11 +61,6 @@ sed -i '/cmake_minimum_required(VERSION 3.13)/a \
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON) \
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -ffile-prefix-map='"${PROJECT_ROOT}"'=/project -fmacro-prefix-map='"${PROJECT_ROOT}"'=/project -ffile-prefix-map='"${GRADLE_CACHE_PREFIX}"'=/project/caches/ -fmacro-prefix-map='"${GRADLE_CACHE_PREFIX}"'=/project/caches/") \
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ffile-prefix-map='"${PROJECT_ROOT}"'=/project -fmacro-prefix-map='"${PROJECT_ROOT}"'=/project -ffile-prefix-map='"${GRADLE_CACHE_PREFIX}"'=/project/caches/ -fmacro-prefix-map='"${GRADLE_CACHE_PREFIX}"'=/project/caches/")' $CMAKE_FILE
-#sed -i '/file(GLOB LIB_CUSTOM_SRCS CONFIGURE_DEPENDS \*.cpp ${LIB_COMMON_COMPONENTS_DIR}\/\*.cpp ${LIB_COMMON_COMPONENTS_DIR}\/utils\/\*.cpp)/a list(SORT LIB_CUSTOM_SRCS)' $CMAKE_FILE
-#sed -i '/file(GLOB LIB_CODEGEN_SRCS CONFIGURE_DEPENDS ${LIB_ANDROID_GENERATED_COMPONENTS_DIR}\/\*.cpp)/a list(SORT LIB_CODEGEN_SRCS)' $CMAKE_FILE
-#echo 'set_target_properties(${LIB_TARGET_NAME} PROPERTIES LINK_FLAGS "-Wl,--build-id=none -Wl,--sort-common -Wl,--sort-section=name -Wl,--no-undefined-version -Wl,--no-rosegment -Wl,--strip-all -Wl,--hash-style=gnu")' >> $CMAKE_FILE
-#sed -i '/add_compile_options(/a \
-#  -g0' $CMAKE_FILE
 
 ## safe-area-context patch
 CMAKE_FILE="node_modules/react-native-safe-area-context/android/src/main/jni/CMakeLists.txt"
@@ -89,8 +69,3 @@ sed -i '/cmake_minimum_required(VERSION 3.13)/a \
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON) \
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -ffile-prefix-map=${CMAKE_SOURCE_DIR}=/project -fmacro-prefix-map=${CMAKE_SOURCE_DIR}=/project -ffile-prefix-map='"${GRADLE_CACHE_PREFIX}"'=/project/caches/ -fmacro-prefix-map='"${GRADLE_CACHE_PREFIX}"'=/project/caches/") \
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ffile-prefix-map=${CMAKE_SOURCE_DIR}=/project -fmacro-prefix-map=${CMAKE_SOURCE_DIR}=/project -ffile-prefix-map='"${GRADLE_CACHE_PREFIX}"'=/project/caches/ -fmacro-prefix-map='"${GRADLE_CACHE_PREFIX}"'=/project/caches/")' $CMAKE_FILE
-#sed -i '/file(GLOB LIB_CUSTOM_SRCS CONFIGURE_DEPENDS \*.cpp ${LIB_COMMON_COMPONENTS_DIR}\/\*.cpp ${LIB_COMMON_COMPONENTS_DIR}\/utils\/\*.cpp)/a list(SORT LIB_CUSTOM_SRCS)' $CMAKE_FILE
-#sed -i '/file(GLOB LIB_CODEGEN_SRCS CONFIGURE_DEPENDS ${LIB_ANDROID_GENERATED_COMPONENTS_DIR}\/\*.cpp)/a list(SORT LIB_CODEGEN_SRCS)' $CMAKE_FILE
-#echo 'set_target_properties(${LIB_TARGET_NAME} PROPERTIES LINK_FLAGS "-Wl,--build-id=none -Wl,--sort-common -Wl,--sort-section=name -Wl,--no-undefined-version -Wl,--no-rosegment -Wl,--strip-all -Wl,--hash-style=gnu")' >> $CMAKE_FILE
-#sed -i '/add_compile_options(/a \
-#  -g0' $CMAKE_FILE
