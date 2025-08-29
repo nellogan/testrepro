@@ -9,19 +9,19 @@ echo "set_target_properties(appmodules PROPERTIES LINK_FLAGS \"-Wl,--build-id=no
 CMAKE_FILE="node_modules/react-native/ReactAndroid/cmake-utils/ReactNative-application.cmake"
 #sed -i '/find_program(CCACHE_FOUND ccache)/,/endif(CCACHE_FOUND)/d' $CMAKE_FILE
 #sed -i 's/set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)/set(CMAKE_INTERPROCEDURAL_OPTIMIZATION FALSE)/' $CMAKE_FILE
-# Sort source files
-sed -i '/if(override_cpp_SRC)/,/endif()/c\
-if(override_cpp_SRC)\
-  file(GLOB input_SRC CONFIGURE_DEPENDS\
-    ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp\
-    ${BUILD_DIR}/generated/autolinking/src/main/jni/*.cpp)\
-  list(SORT input_SRC) # Ensure deterministic order\
-else()\
-  file(GLOB input_SRC CONFIGURE_DEPENDS\
-    ${REACT_ANDROID_DIR}/cmake-utils/default-app-setup/*.cpp\
-    ${BUILD_DIR}/generated/autolinking/src/main/jni/*.cpp)\
-  list(SORT input_SRC) # Ensure deterministic order\
-endif()' $CMAKE_FILE
+## Sort source files
+#sed -i '/if(override_cpp_SRC)/,/endif()/c\
+#if(override_cpp_SRC)\
+#  file(GLOB input_SRC CONFIGURE_DEPENDS\
+#    ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp\
+#    ${BUILD_DIR}/generated/autolinking/src/main/jni/*.cpp)\
+#  list(SORT input_SRC) # Ensure deterministic order\
+#else()\
+#  file(GLOB input_SRC CONFIGURE_DEPENDS\
+#    ${REACT_ANDROID_DIR}/cmake-utils/default-app-setup/*.cpp\
+#    ${BUILD_DIR}/generated/autolinking/src/main/jni/*.cpp)\
+#  list(SORT input_SRC) # Ensure deterministic order\
+#endif()' $CMAKE_FILE
 sed -i '/add_library(${CMAKE_PROJECT_NAME} SHARED ${input_SRC})/a target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE -g0)' $CMAKE_FILE
 # Force linked third-party libraries to omit unnecessary data
 sed -i '/if(EXISTS ${PROJECT_BUILD_DIR}\/generated\/autolinking\/src\/main\/jni\/Android-autolinking.cmake)/,/endif()/c\
